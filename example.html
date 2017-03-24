@@ -1,0 +1,33 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+    <script src="knockout-i18n.js"></script>
+    <script type="text/javascript">
+        setTimeout(function() {
+            ko.i18n.setBundle('en', {
+                test: 'TestValue',
+                testWithArgs: 'This is {{value}}',
+                btnEn: 'English',
+                btnFr: 'French'
+            });
+
+            ko.i18n.setBundle('fr', {
+                test: 'TestValue',
+                testWithArgs: 'Cest La {{value}}',
+                btnEn: 'Anglais',
+                btnFr: 'Français'
+            });
+        }, 1000);
+    </script>
+</head>
+<body>
+
+    <div data-bind="i18n: 'test'"></div>
+    <div data-bind="i18n: 'testWithArgs', i18n-options: { value: 'Vie' }"></div>
+
+    <button data-bind="click: function() { ko.i18n.locale('en') }, i18n: 'btnEn'"></button>
+    <button data-bind="click: function() { ko.i18n.locale('fr') }, i18n: 'btnFr'"></button>
+
+    <script>ko.applyBindings();</script>
+</body>
+</html>
