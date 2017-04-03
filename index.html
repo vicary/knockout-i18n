@@ -1,33 +1,140 @@
+<!doctype html>
 <html>
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
-    <script src="knockout-i18n.js"></script>
-    <script type="text/javascript">
-        setTimeout(function() {
-            ko.i18n.setBundle('en', {
-                test: 'TestValue',
-                testWithArgs: 'This is {{value}}',
-                btnEn: 'English',
-                btnFr: 'French'
-            });
+  <title>Knockout.js i18n plugin</title>
 
-            ko.i18n.setBundle('fr', {
-                test: 'TestValue',
-                testWithArgs: 'Cest La {{value}}',
-                btnEn: 'Anglais',
-                btnFr: 'Français'
-            });
-        }, 1000);
-    </script>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+  <style>
+    .content {
+      padding-top: 1rem;
+    }
+
+    .form-control {
+      font-family: Consolas, "Courier New";
+      font-size: .8rem;
+      background-color: #eee;
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.1/knockout-min.js"></script>
+  <script src="knockout-i18n.js"></script>
+  <script type="text/javascript">
+    function ViewModel() {
+      var that = this
+        , rateLimits = { rateLimit: { timeout: 300, method: 'notifyWhenChangesStop' } };
+
+      this.bundlesText = ko.observable().extend(rateLimits);
+      this.bundlesText.subscribe(function(value) {
+        var bundles;
+
+        try {
+          bundles = JSON.parse(value);
+        } catch(e) { return; }
+
+        ko.i18n.setBundles(bundles);
+      });
+
+      this.bundleName = ko.observable('zh').extend(rateLimits);
+      this.bundleText = ko.observable().extend(rateLimits);
+
+      this.bundleObject = ko.pureComputed(function() {
+        return {
+          locale: this.bundleName(),
+          bundle: this.bundleText()
+        };
+      }, this);
+
+      this.bundleObject.subscribe(function(value) {
+        try {
+          ko.i18n.setBundle(value.locale, JSON.parse(value.bundle));
+        } catch(e) {}
+      });
+
+      // init values
+      this.bundlesText(JSON.stringify({
+        en: {
+          text: 'Plain text without substitutions.',
+          textWithArgs: 'This sentance has {{{value}}} substituted.',
+          en_US: 'English',
+          fr_FR: 'French',
+          zh_TW: 'Chinese'
+        },
+        fr: {
+          text: 'Texte brut sans substitution.',
+          textWithArgs: 'Cette phrase a {{{value}}} substitué',
+          en_US: 'Anglais',
+          fr_FR: 'Français',
+          zh_TW: 'Chinois'
+        }
+      }, null, 2));
+
+      this.bundleText(JSON.stringify({
+        text: '沒有代入的文字',
+        textWithArgs: '這句的{{{value}}}是代入值。',
+        en_US: '英語',
+        fr_FR: '法語',
+        zh_TW: '中文'
+      }, null, 2));
+    }
+
+    function setsLocale(locale) {
+      return function() {
+        ko.i18n.locale(locale);
+      };
+    }
+  </script>
 </head>
 <body>
+  <nav class="navbar navbar-light bg-faded navbar-fixed-top">
+    <span class="navbar-text">Internationalization for Knockout.js</span>
+  </nav>
 
-    <div data-bind="i18n: 'test'"></div>
-    <div data-bind="i18n: 'testWithArgs', i18n-options: { value: 'Vie' }"></div>
+  <div class="container content">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="form-group">
+          <label for="txtBundles">ko.i18n.setBundles(bundles);</label>
+          <textarea id="txtBundles" class="form-control" rows="16" placeholder="bundles" data-bind="textInput: bundlesText"></textarea>
+          <small class="form-text text-muted">Edit the JSON above and see how the preview changes.</small>
+        </div>
 
-    <button data-bind="click: function() { ko.i18n.locale('en') }, i18n: 'btnEn'"></button>
-    <button data-bind="click: function() { ko.i18n.locale('fr') }, i18n: 'btnFr'"></button>
+        <div class="form-group">
+          <label for="txtBundleName">ko.i18n.setBundle(locale, bundle);</label>
+          <input id="txtBundleName" type="text" class="form-control" placeholder="locale" data-bind="textInput: bundleName" />
+        </div>
 
-    <script>ko.applyBindings();</script>
+        <div class="form-group">
+          <textarea id="txtBundleText" class="form-control" rows="8" placeholder="bundle" data-bind="textInput: bundleText"></textarea>
+          <small class="form-text text-muted">Edit values above and see how the preview changes.</small>
+        </div>
+      </div>
+
+      <div class="col">
+        <label>&nbsp;</label>
+        <div class="card">
+          <div class="card-header">
+            Live Preview
+          </div>
+          <div class="card-block">
+            <p data-bind="i18n: 'text'"></p>
+            <p data-bind="i18n: 'textWithArgs', i18n-options: { value: 'Vie' }"></p>
+
+            <a href="javascript:" class="btn btn-outline-primary" data-bind="click: setsLocale('en'), i18n: 'en_US'"></a>
+            <a href="javascript:" class="btn btn-outline-success" data-bind="click: setsLocale('fr'), i18n: 'fr_FR'"></a>
+            <a href="javascript:" class="btn btn-outline-info" data-bind="click: setsLocale('zh'), i18n: 'zh_TW'"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>ko.applyBindings(new ViewModel());</script>
+  </div>
 </body>
 </html>

@@ -4,29 +4,29 @@
   if (!window.ko) throw new Error('Translation requires knockout.');
 
   // private observable
-  var bundles = ko.observable({});
+  var _bundles = ko.observable({});
 
   ko.i18n = {
     locale: ko.observable('en'),
 
     // Sets language bundle under specified locale
     setBundle: function(locale, bundle) {
-      var value = bundles();
+      var value = _bundles();
 
       value[locale] = bundle;
 
-      bundles(value);
+      _bundles(value);
     },
 
     // Sets multiple bundles with the key as locales
     setBundles: function(bundles) {
-      var value = bundles();
+      var value = _bundles();
 
       Object.keys(bundles).forEach(function(locale) {
         value[locale] = bundles[locale];
       });
 
-      bundles(value);
+      _bundles(value);
     }
   };
 
@@ -66,7 +66,7 @@
 
   function getBundleValue(key) {
     var locales = ko.i18n.locale(),
-        value = bundles();
+        value = _bundles();
 
     if ( !Array.isArray(locales) ) {
       locales = [locales];
