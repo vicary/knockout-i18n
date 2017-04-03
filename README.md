@@ -1,5 +1,5 @@
 # knockout-i18n
-A simple internationalization module for KnockoutJs, check out `example.html` for simple workings.
+A simple internationalization module for KnockoutJs, check out the [live demo](https://vicary.github.io/knockout-18n) for simple workings.
 
 ## API
 ### `ko.i18n.locale`
