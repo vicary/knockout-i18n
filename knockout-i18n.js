@@ -49,7 +49,7 @@
           // todo; create a computed that substitudes values into bundle value.
           for ( var key in substitudes ) {
             if ( substitudes.hasOwnProperty(key) ) {
-              _value = _value.replace('{{' + key + '}}', substitudes[key]);
+              _value = _value.replace('{{' + key + '}}', ko.unwrap(substitudes[key]));
             }
           }
         }

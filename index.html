@@ -50,12 +50,13 @@
           bundle: this.bundleText()
         };
       }, this);
-
       this.bundleObject.subscribe(function(value) {
         try {
           ko.i18n.setBundle(value.locale, JSON.parse(value.bundle));
         } catch(e) {}
       });
+
+      this.subtituteValue = ko.observable('The Value');
 
       // init values
       this.bundlesText(JSON.stringify({
@@ -114,6 +115,11 @@
           <textarea id="txtBundleText" class="form-control" rows="8" placeholder="bundle" data-bind="textInput: bundleText"></textarea>
           <small class="form-text text-muted">Edit values above and see how the preview changes.</small>
         </div>
+
+        <div class="form-group">
+          <label for="txtSubstitude">Subtitude Value</label>
+          <input id="txtSubstitude" class="form-control" data-bind="textInput: subtituteValue"/>
+        </div>
       </div>
 
       <div class="col">
@@ -124,7 +130,7 @@
           </div>
           <div class="card-block">
             <p data-bind="i18n: 'text'"></p>
-            <p data-bind="i18n: 'textWithArgs', i18n-options: { value: 'Vie' }"></p>
+            <p data-bind="i18n: 'textWithArgs', i18n-options: { value: subtituteValue }"></p>
 
             <a href="javascript:" class="btn btn-outline-primary" data-bind="click: setsLocale('en'), i18n: 'en_US'"></a>
             <a href="javascript:" class="btn btn-outline-success" data-bind="click: setsLocale('fr'), i18n: 'fr_FR'"></a>
